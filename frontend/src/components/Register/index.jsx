@@ -2,14 +2,22 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
-function Login() {
+function Register() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
-  const [wrongPassword, setWrongPassword] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    try {
+      await axios.post('http://localhost:5000/api/auth/register', {
+        email,
+        password,
+      });
+    } catch (error) {
+      console.error('Registration failed:', error);
+    }
+
     try {
       const response = await axios.post('http://localhost:5000/api/auth/login', {
         email,
@@ -20,18 +28,13 @@ function Login() {
       navigate('/dashboard');
 
     } catch (error) {
-
       console.error('Login failed:', error);
-      if (error.response.status === 400) {
-        setWrongPassword(true);
-      }
-      
     }
   };
 
   return (
     <div>
-      <h2>Login</h2>
+      <h2>Register</h2>
       <form onSubmit={handleSubmit}>
         <div>
           <label>Email</label>
@@ -51,11 +54,10 @@ function Login() {
             required
           />
         </div>
-        <button type="submit">Login</button>
+        <button type="submit">Register</button>
       </form>
-      <div>{wrongPassword ? <h2>WRONG PASSWORD</h2>: null}</div>
     </div>
   );
 }
 
-export default Login;
+export default Register;
